@@ -27,6 +27,7 @@ import {Text_Demo}
                     from "./examples/text-demo.js";
 import {Transforms_Sandbox_Base, Transforms_Sandbox}
                     from "./examples/transforms-sandbox.js";
+import { Final_Project } from './final-project.js';
 
 Object.assign (defs,
                {Minimal_Webgl_Demo},
@@ -38,12 +39,13 @@ Object.assign (defs,
                {Parametric_Surfaces},
                {Scene_To_Texture_Demo},
                {Text_Demo},
-               {Transforms_Sandbox_Base, Transforms_Sandbox}
+               {Transforms_Sandbox_Base, Transforms_Sandbox},
+               {Final_Project}
 );
 
 // ******************** SELECT THE DEMO TO DISPLAY:
 
-const main_scene        = Parametric_Surfaces;
+const main_scene        = Final_Project;
 const additional_scenes = [];
 
 export {main_scene, additional_scenes, defs};
