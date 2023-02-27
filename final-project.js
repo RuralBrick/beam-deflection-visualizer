@@ -1,14 +1,22 @@
 import {defs, tiny} from './examples/common.js';
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
 export class Final_Project extends Scene {
-    constructor() {
-        super();
+    constructor(webgl_manager, control_panel) {
+        super(webgl_manager, control_panel);
 
+        this.shapes = {
+            torus: new defs.Torus(15, 15),
+        };
 
+        this.materials = {
+            test: new Material(new defs.Phong_Shader(),
+                {ambient: .4, diffusivity: .6, color: hex_color("#ff0000")}),
+            refract: new Material(new Refract_Shader()),
+        };
     }
 
     make_control_panel() {
@@ -16,6 +24,57 @@ export class Final_Project extends Scene {
     }
 
     display(context, program_state) {
-        
+        program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -5)));
+        program_state.projection_transform = Mat4.perspective(
+            Math.PI / 4, context.width / context.height, .1, 1000);
+
+        const light_position = vec4(0, 5, 5, 1);
+        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
+
+        this.shapes.torus.draw(
+            context,
+            program_state,
+            Mat4.identity(),
+            this.materials.refract,
+        );
+    }
+}
+
+class Refract_Shader extends Shader {
+    update_GPU(context, gpu_addresses, graphics_state, model_transform, material) {
+        const [P, C, M] = [graphics_state.projection_transform, graphics_state.camera_inverse, model_transform],
+            PCM = P.times(C).times(M);
+        context.uniformMatrix4fv(gpu_addresses.model_transform, false, Matrix.flatten_2D_to_1D(model_transform.transposed()));
+        context.uniformMatrix4fv(gpu_addresses.projection_camera_model_transform, false,
+            Matrix.flatten_2D_to_1D(PCM.transposed()));
+    }
+
+    shared_glsl_code() {
+        return `
+            precision mediump float;
+
+            varying vec3 viewDir;
+            varying vec3 normalDir;
+        `;
+    }
+
+    vertex_glsl_code() {
+        return this.shared_glsl_code() + `
+            attribute vec3 position, normal;
+            uniform mat4 model_transform;
+            uniform mat4 projection_camera_model_transform;
+
+            void main() {
+                gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
+            }
+        `;
+    }
+
+    fragment_glsl_code() {
+        return this.shared_glsl_code() + `
+            void main() {
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        `
     }
 }
