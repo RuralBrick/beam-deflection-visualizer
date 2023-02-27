@@ -19,14 +19,27 @@ export class Final_Project extends Scene {
         };
     }
 
+    setup(context, program_state) {
+        // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
+        if (!context.scratchpad.controls) {
+            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+            // Define the global camera and projection matrices, which are stored in program_state.
+            program_state.set_camera(Mat4.translation(0, 0, -5));
+        }
+        program_state.projection_transform = Mat4.perspective(
+            Math.PI / 4, context.width / context.height, 1, 100);
+
+        // *** Lights: *** Values of vector or point lights.
+        const light_position = vec4(0, 5, 5, 1);
+        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
+    }
+
     make_control_panel() {
 
     }
 
     display(context, program_state) {
-        program_state.set_camera(Mat4.identity().times(Mat4.translation(0, 0, -5)));
-        program_state.projection_transform = Mat4.perspective(
-            Math.PI / 4, context.width / context.height, .1, 1000);
+        this.setup(context, program_state);
 
         const light_position = vec4(0, 5, 5, 1);
         program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
