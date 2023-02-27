@@ -84,7 +84,7 @@ class Refract_Shader extends Shader {
     vertex_glsl_code() {
         return this.shared_glsl_code() + `
             attribute vec3 position, normal;
-            uniform vec3 camera_center
+            uniform vec3 camera_center;
             uniform mat4 model_transform;
             uniform mat4 inv_trans_model_transform;
             uniform mat4 projection_camera_model_transform;
@@ -92,7 +92,7 @@ class Refract_Shader extends Shader {
             void main() {
                 gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
                 normalDir = normalize( vec3( inv_trans_model_transform * vec4(normal, 0.0) ) );
-                viewDir = normalize( vec3( model_transform * position - vec4(camera_center, 1.0) ) );
+                viewDir = normalize( vec3( model_transform * vec4( position, 1.0 ) - vec4(camera_center, 1.0) ) );
             }
         `;
     }
