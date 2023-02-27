@@ -84,6 +84,8 @@ export class Stress_Shader extends Shader {
 
     fragment_glsl_code() {
         return this.shared_glsl_code() + `
+            // TODO: Calculate internal stresses here, so visualization is vertex-independent
+
             uniform vec4 min_color;
             uniform vec4 max_color;
 
