@@ -56,7 +56,7 @@ export class Stress_Shader extends Shader {
             uniform float min_force;
             uniform float max_force;
 
-            varying float shear_force;
+            varying vec3 world_position;
         `;
     }
 
@@ -71,25 +71,23 @@ export class Stress_Shader extends Shader {
                 vec4 homogenous_position = vec4( position, 1.0 );
 
                 gl_Position = projection_camera_model_transform * homogenous_position;
-                vec4 world_space_coord = model_transform * homogenous_position;
-
-                shear_force = 0.0;
-                for (int i = 0; i < N_FORCES; i++) {
-                    if (force_positions[i].x < world_space_coord.x)
-                        shear_force += forces[i].y;
-                }
+                world_position = vec3( model_transform * homogenous_position );
             }
         `;
     }
 
     fragment_glsl_code() {
         return this.shared_glsl_code() + `
-            // TODO: Calculate internal stresses here, so visualization is vertex-independent
-
             uniform vec4 min_color;
             uniform vec4 max_color;
 
             void main() {
+                float shear_force = 0.0;
+                for (int i = 0; i < N_FORCES; i++) {
+                    if (force_positions[i].x < world_position.x)
+                        shear_force += forces[i].y;
+                }
+            
                 float clamped_shear = clamp( shear_force, min_force, max_force );
 
                 float range = max_force - min_force;
