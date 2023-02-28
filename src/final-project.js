@@ -1,5 +1,6 @@
 import {defs, tiny} from '../examples/common.js';
-import { Stress_Shader, Force } from './stress-shader.js';
+import { Stress_Shader } from './stress-shader.js';
+import {Force} from "./force.js";
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,

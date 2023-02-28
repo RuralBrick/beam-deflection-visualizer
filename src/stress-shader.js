@@ -4,18 +4,6 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
-export class Force {
-    constructor(direction, magnitude = 1, position = vec3(0, 0, 0)) {
-        this.direction = direction;
-        this.magnitude = magnitude;
-        this.position = position;
-    }
-
-    get normalized_direction() {
-        return this.direction.normalized();
-    }
-}
-
 export class Stress_Shader extends Shader {
     constructor(num_forces = 100) {
         super();
