@@ -1,9 +1,3 @@
 .idea/
 .DS_Store
-*.gif
-*.ico
-*.png
-*.jpg
-*.bat
-*.command
 .vscode/*
