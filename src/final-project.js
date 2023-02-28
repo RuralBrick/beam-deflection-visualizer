@@ -61,13 +61,16 @@ export class Final_Project extends Scene {
 
         const t = program_state.animation_time / 1000;
         const period = 5;
-        const force = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
+        const magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
 
         const forces = [
-            new Force(vec3(0, 1, 0), 10 * force, vec3(-10, 0, 0)),
-            new Force(vec3(0, -1, 0), 20 * force, vec3(0, 0, 0)),
-            new Force(vec3(0, 1, 0), 10 * force, vec3(10, 0, 0)),
+            new Force(vec3(0, 1, 0), 10 * magnitude, vec3(-10, -1, 0)),
+            new Force(vec3(0, -1, 0), 20 * magnitude, vec3(0, 1, 0)),
+            new Force(vec3(0, 1, 0), 10 * magnitude, vec3(10, -1, 0)),
         ];
+
+        for (const force of forces)
+            force.draw(context, program_state);
 
         this.shapes.cylinder.draw(
             context,

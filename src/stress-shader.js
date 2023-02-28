@@ -26,7 +26,7 @@ export class Stress_Shader extends Shader {
         const flattened_forces = [];
         const flattened_force_positions = [];
         for (const force of material.forces) {
-            const force_components =  force.normalized_direction.times(force.magnitude);
+            const force_components =  force.normalized_direction.times(force.abs_magnitude);
             flattened_forces.push(...force_components);
             flattened_force_positions.push(...force.position);
         }
