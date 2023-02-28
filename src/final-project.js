@@ -59,6 +59,8 @@ export class Final_Project extends Scene {
     display(context, program_state) {
         this.setup(context, program_state);
 
+        // TODO: Maybe draw axes
+
         const t = program_state.animation_time / 1000;
         const period = 5;
         const magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
