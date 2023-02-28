@@ -17,8 +17,9 @@ export class Stress_Shader extends Shader {
         context.uniformMatrix4fv(gpu_addresses.projection_camera_model_transform, false,
             Matrix.flatten_2D_to_1D(PCM.transposed()));
 
-        context.uniform4fv(gpu_addresses.min_color, material.min_color);
-        context.uniform4fv(gpu_addresses.max_color, material.max_color);
+        context.uniform4fv(gpu_addresses.neg_color, material.neg_color);
+        context.uniform4fv(gpu_addresses.zero_color, material.zero_color);
+        context.uniform4fv(gpu_addresses.pos_color, material.pos_color);
         context.uniform1f(gpu_addresses.min_force, material.min_force);
         context.uniform1f(gpu_addresses.max_force, material.max_force);
 
@@ -66,8 +67,9 @@ export class Stress_Shader extends Shader {
 
     fragment_glsl_code() {
         return this.shared_glsl_code() + `
-            uniform vec4 min_color;
-            uniform vec4 max_color;
+            uniform vec4 neg_color;
+            uniform vec4 zero_color;
+            uniform vec4 pos_color;
 
             void main() {
                 float shear_force = 0.0;
@@ -75,13 +77,12 @@ export class Stress_Shader extends Shader {
                     if (force_positions[i].x < world_position.x)
                         shear_force += forces[i].y;
                 }
-            
                 float clamped_shear = clamp( shear_force, min_force, max_force );
 
-                float range = max_force - min_force;
-                float a = (clamped_shear - min_force) / range;
-
-                gl_FragColor = mix( min_color, max_color, a );
+                if (clamped_shear < 0.0)
+                    gl_FragColor = mix( zero_color, neg_color, clamped_shear/min_force );
+                else
+                    gl_FragColor = mix( zero_color, pos_color, clamped_shear/max_force );
             }
         `;
     }

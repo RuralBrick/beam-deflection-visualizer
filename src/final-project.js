@@ -23,8 +23,17 @@ export class Final_Project extends Scene {
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
-            stress: new Material(new Stress_Shader(),
-                {forces: [], min_color: color(0, 0, 1, 1), max_color: color(1, 0, 0, 1), min_force: -10, max_force: 10}),
+            stress: new Material(
+                new Stress_Shader(),
+                {
+                    forces: [],
+                    neg_color: color(0, 0, 1, 1),
+                    zero_color: color(0, 1, 0, 1),
+                    pos_color: color(1, 0, 0, 1),
+                    min_force: -10,
+                    max_force: 10
+                }
+            ),
         };
     }
 
