@@ -1,6 +1,7 @@
 import {defs, tiny} from '../examples/common.js';
 import { Stress_Shader } from './stress-shader.js';
 import {Force} from "./force.js";
+import { Shape_From_File } from '../examples/obj-file-demo.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -15,6 +16,8 @@ export class Final_Project extends Scene {
             cube: new defs.Cube(),
             s4: new defs.Subdivision_Sphere(4),
             cylinder: new defs.Capped_Cylinder(50, 15),
+            lucy: new Shape_From_File('../assets/lucy.obj'),
+            teapot: new Shape_From_File('../assets/teapot.obj'),
         };
 
         this.materials = {
