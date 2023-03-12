@@ -52,6 +52,7 @@ export class Beam_Shader extends Shader {
                 vec4 displacement = model_transform[3];
                 coord -= vec3( displacement );
                 coord.x += L/2.;
+                coord.y *= -1.;
                 return coord;
             }
         `;

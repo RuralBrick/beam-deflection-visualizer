@@ -93,9 +93,9 @@ export class Final_Project extends Scene {
                     length: l,
                     youngs_modulus: E,
                     moment_of_inertia: I,
-                    neg_color: color(1, 0, 0, 1),
+                    neg_color: color(0, 0, 1, 1),
                     zero_color: color(0, 1, 0, 1),
-                    pos_color: color(0, 0, 1, 1),
+                    pos_color: color(1, 0, 0, 1),
                     min_stress: -10,
                     max_stress: 10,
                 }
