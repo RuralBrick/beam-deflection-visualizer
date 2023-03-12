@@ -1,5 +1,5 @@
 import {defs, tiny} from '../examples/common.js';
-import { Stress_Shader } from './stress-shader.js';
+import { Shear_Shader } from './shear-shader.js';
 import {Force} from "./force.js";
 import { Shape_From_File } from '../examples/obj-file-demo.js';
 
@@ -24,7 +24,7 @@ export class Final_Project extends Scene {
             test: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             stress: new Material(
-                new Stress_Shader(),
+                new Shear_Shader(),
                 {
                     forces: [],
                     neg_color: color(0, 0, 1, 1),

@@ -4,7 +4,7 @@ const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
-export class Stress_Shader extends Shader {
+export class Shear_Shader extends Shader {
     constructor(num_forces = 100) {
         super();
         this.num_forces = num_forces;
