@@ -2,6 +2,8 @@ import {defs, tiny} from '../examples/common.js';
 import { Shear_Shader } from './shear-shader.js';
 import {Force} from "./force.js";
 import { Shape_From_File } from '../examples/obj-file-demo.js';
+import { Beam_Shader } from './beam-shader.js';
+import { Subdivision_Cube } from './subdivision-cube.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -18,6 +20,7 @@ export class Final_Project extends Scene {
             cylinder: new defs.Capped_Cylinder(50, 15),
             lucy: new Shape_From_File('../assets/lucy.obj'),
             teapot: new Shape_From_File('../assets/teapot.obj'),
+            beam: new Subdivision_Cube(15, 15),
         };
 
         this.materials = {
@@ -65,21 +68,29 @@ export class Final_Project extends Scene {
         const period = 5;
         const magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
 
-        const forces = [
-            new Force(vec3(0, 1, 0), 10 * magnitude, vec3(-10, -1, 0)),
-            new Force(vec3(0, -1, 0), 20 * magnitude, vec3(0, 1, 0)),
-            new Force(vec3(0, 1, 0), 10 * magnitude, vec3(10, -1, 0)),
-        ];
+        const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(0, 1, 0));
 
-        for (const force of forces)
-            force.draw(context, program_state);
+        const b = 1;
+        const h = 1;
+        const l = 10;
 
+        const E = 1e3;
+
+        // TODO: Use this.shapes.beam instead
         this.shapes.cylinder.draw(
             context,
             program_state,
-            Mat4.identity().times(Mat4.rotation(Math.PI/2, 0, 1, 0))
-                           .times(Mat4.scale(1, 1, 20)),
-            this.materials.shear.override({forces: forces})
+            Mat4.scale(l/2, h/2, b/2).rotation(Math.PI/2, 0, 1, 0),
+            new Material(
+                new Beam_Shader(),
+                {
+                    force: force,
+                    width: b,
+                    height: h,
+                    length: l,
+                    youngs_modulus: E,
+                }
+            )
         );
     }
 }
