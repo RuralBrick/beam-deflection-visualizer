@@ -23,7 +23,7 @@ export class Final_Project extends Scene {
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
-            stress: new Material(
+            shear: new Material(
                 new Shear_Shader(),
                 {
                     forces: [],
@@ -79,7 +79,7 @@ export class Final_Project extends Scene {
             program_state,
             Mat4.identity().times(Mat4.rotation(Math.PI/2, 0, 1, 0))
                            .times(Mat4.scale(1, 1, 20)),
-            this.materials.stress.override({forces: forces})
+            this.materials.shear.override({forces: forces})
         );
     }
 }
