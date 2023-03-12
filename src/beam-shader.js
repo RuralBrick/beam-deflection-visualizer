@@ -103,7 +103,7 @@ export class Beam_Shader extends Shader {
                 if (x < c)
                     stress = y/I*P*(1.-c/L)*x;
                 else
-                    stress = y/I*P/L*c*(L-x);
+                    stress = y/I*P*c*(1.-x/L);
                 
                 float clamped_stress = clamp( stress, min_stress, max_stress );
 
