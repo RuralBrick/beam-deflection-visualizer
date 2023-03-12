@@ -38,6 +38,10 @@ export class Final_Project extends Scene {
                 }
             ),
         };
+
+        this.shaders = {
+            beam: new Beam_Shader(),
+        };
     }
 
     setup(context, program_state) {
@@ -70,25 +74,29 @@ export class Final_Project extends Scene {
 
         const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(0, 1, 0));
 
-        const b = 1;
-        const h = 1;
+        // const b = 1;
+        // const h = 1;
         const l = 10;
 
         const E = 1e3;
+        // const I = b*h**3/12;
+
+        // FIXME: Temp variables
+        const r = 1;
+        const I = r**4*Math.PI/4;
 
         // TODO: Use this.shapes.beam instead
         this.shapes.cylinder.draw(
             context,
             program_state,
-            Mat4.scale(l/2, h/2, b/2).rotation(Math.PI/2, 0, 1, 0),
+            Mat4.rotation(Math.PI/2, 0, 1, 0).times(Mat4.scale(r, r, l)), // Mat4.scale(l/2, h/2, b/2),
             new Material(
-                new Beam_Shader(),
+                this.shaders.beam,
                 {
                     force: force,
-                    width: b,
-                    height: h,
                     length: l,
                     youngs_modulus: E,
+                    moment_of_inertia: I,
                 }
             )
         );
