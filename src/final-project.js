@@ -3,7 +3,7 @@ import { Shear_Shader } from './shear-shader.js';
 import {Force} from "./force.js";
 import { Shape_From_File } from '../examples/obj-file-demo.js';
 import { Beam_Shader } from './beam-shader.js';
-import { Subdivision_Cube } from './subdivision-cube.js';
+// import { Subdivision_Cube } from './subdivision-cube.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
@@ -20,7 +20,7 @@ export class Final_Project extends Scene {
             cylinder: new defs.Capped_Cylinder(50, 15),
             lucy: new Shape_From_File('../assets/lucy.obj'),
             teapot: new Shape_From_File('../assets/teapot.obj'),
-            beam: new Subdivision_Cube(15, 15),
+            // beam: new Subdivision_Cube(15, 15),
         };
 
         this.materials = {
