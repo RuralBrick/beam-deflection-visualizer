@@ -72,7 +72,8 @@ export class Final_Project extends Scene {
         const period = 5;
         const magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
 
-        const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(0, 1, 0));
+        const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(2, 1, 0));
+        force.draw(context, program_state);
 
         // const b = 1;
         // const h = 1;
@@ -89,7 +90,7 @@ export class Final_Project extends Scene {
         this.shapes.cylinder.draw(
             context,
             program_state,
-            Mat4.rotation(Math.PI/2, 0, 1, 0).times(Mat4.scale(r, r, l)), // Mat4.scale(l/2, h/2, b/2),
+            Mat4.translation(-1, 0, 0).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(r, r, l)), // Mat4.scale(l/2, h/2, b/2),
             new Material(
                 this.shaders.beam,
                 {
@@ -97,6 +98,11 @@ export class Final_Project extends Scene {
                     length: l,
                     youngs_modulus: E,
                     moment_of_inertia: I,
+                    neg_color: color(1, 0, 0, 1),
+                    zero_color: color(0, 1, 0, 1),
+                    pos_color: color(0, 0, 1, 1),
+                    min_stress: -10,
+                    max_stress: 10,
                 }
             )
         );

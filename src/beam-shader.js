@@ -24,12 +24,21 @@ export class Beam_Shader extends Shader {
         // External factors
         context.uniform3fv(gpu_addresses.force, material.force.normalized_direction.times(material.force.abs_magnitude));
         context.uniform3fv(gpu_addresses.force_position, material.force.position);
+
+        // Colors
+        context.uniform4fv(gpu_addresses.neg_color, material.neg_color);
+        context.uniform4fv(gpu_addresses.zero_color, material.zero_color);
+        context.uniform4fv(gpu_addresses.pos_color, material.pos_color);
+        context.uniform1f(gpu_addresses.min_stress, material.min_stress);
+        context.uniform1f(gpu_addresses.max_stress, material.max_stress);
     }
 
     shared_glsl_code() {
         return `
             precision mediump float;
 
+            uniform mat4 model_transform;
+            
             uniform vec3 force;
             uniform vec3 force_position;
 
@@ -37,27 +46,29 @@ export class Beam_Shader extends Shader {
             uniform float L;
             uniform float I;
 
-            varying vec3 world_position;
+            varying vec3 beam_position;
+            
+            vec3 worldToBeamCoord(vec3 coord) {
+                vec4 displacement = model_transform[3];
+                coord -= vec3( displacement );
+                coord.x += L/2.;
+                return coord;
+            }
         `;
     }
 
     vertex_glsl_code() {
         return this.shared_glsl_code() + `
-            uniform mat4 model_transform;
             uniform mat4 projection_camera_transform;
 
             attribute vec3 position;
 
-            float worldXToBeamX(float x) {
-                vec4 displacement = model_transform[3];
-                return x - displacement.x + L/2.;
-            }
-
             void main() {
                 vec4 world_position = model_transform * vec4( position, 1. );
+                beam_position = worldToBeamCoord( vec3( world_position ) );
 
-                float x = worldXToBeamX(world_position.x);
-                float a = worldXToBeamX(force_position.x);
+                float x = beam_position.x;
+                float a = worldToBeamCoord(force_position).x;
                 float b = L - a;
                 float P = -force.y;
 
@@ -76,8 +87,30 @@ export class Beam_Shader extends Shader {
 
     fragment_glsl_code() {
         return this.shared_glsl_code() + `
+            uniform vec4 neg_color;
+            uniform vec4 zero_color;
+            uniform vec4 pos_color;
+            uniform float min_stress;
+            uniform float max_stress;
+
             void main() {
-                gl_FragColor = vec4( 1., 0., 0., 1. );
+                float x = beam_position.x;
+                float y = beam_position.y;
+                float c = worldToBeamCoord(force_position).x;
+                float P = -force.y;
+
+                float stress;
+                if (x < c)
+                    stress = y/I*P*(1.-c/L)*x;
+                else
+                    stress = y/I*P/L*c*(L-x);
+                
+                float clamped_stress = clamp( stress, min_stress, max_stress );
+
+                if (clamped_stress < 0.)
+                    gl_FragColor = mix( zero_color, neg_color, clamped_stress/min_stress );
+                else
+                    gl_FragColor = mix( zero_color, pos_color, clamped_stress/max_stress );
             }
         `;
     }
