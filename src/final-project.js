@@ -42,6 +42,21 @@ export class Final_Project extends Scene {
         this.shaders = {
             beam: new Beam_Shader(),
         };
+
+        this.max_width = 4;
+        this.min_width = 2;
+
+        this.max_height = 2;
+        this.min_height = 0.75;
+
+        this.use_animation = true;
+        this.force_location = 0;
+        this.frames = 0;
+        this.width = 2;
+        this.height = 2;
+        this.length = 10;
+
+        this.max_stress = 0;
     }
 
     setup(context, program_state) {
@@ -60,6 +75,50 @@ export class Final_Project extends Scene {
     }
 
     make_control_panel() {
+        this.key_triggered_button("Toggle Animation", ["t"], () => {
+            this.use_animation ^= 1;
+        });
+        this.new_line();
+
+        this.key_triggered_button("Decrease width", ["j"], () => {
+            if(this.width > this.min_width){
+                this.width += 0.25;
+            };
+        });
+
+        this.live_string(box => {
+            box.textContent = "Width: " + this.width.toFixed(2)
+        });
+
+        this.key_triggered_button("Increase width", ["l"], () => {
+            if(this.width < this.max_width){
+                this.width += 0.25;
+            };
+        });
+
+        this.new_line();
+
+
+        this.key_triggered_button("Decrease height", ["k"], () => {
+            if(this.height > this.min_height){
+                this.height -= 0.25;
+            };
+        });
+
+        this.live_string(box => {
+            box.textContent = "Height: " + this.height.toFixed(2)
+        });
+
+        this.key_triggered_button("Increase Width", ["i"], () => {
+            if(this.height < this.max_height){
+                this.height += 0.25;
+            };
+        });
+
+        this.new_line();
+        this.live_string(box => {
+            box.textContent = "max stress: " + this.max_stress.toFixed(2)
+        });
 
     }
 
@@ -68,16 +127,21 @@ export class Final_Project extends Scene {
 
         // TODO: Maybe draw axes
 
-        const t = program_state.animation_time / 1000;
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         const period = 5;
-        const magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
+        let magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
+        if(this.use_animation){
+            this.force_location = 5 * Math.cos(2*Math.PI*this.frames/period);
+            this.frames = this.frames + dt;
+        }
 
-        const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(2, 1, 0));
+
+        const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(this.force_location, 1, 0));
         force.draw(context, program_state);
 
-        const b = 2;
-        const h = 2;
-        const l = 10;
+        const b = this.width;
+        const h = this.height;
+        const l = this.length;
 
         const E = 1e3;
         const I = b*h**3/12;
@@ -101,5 +165,20 @@ export class Final_Project extends Scene {
                 }
             )
         );
+
+        this.max_stress = this.find_max_stress(l, b, h, this.force_location, magnitude, this.force_location);
+    }
+
+    find_max_stress(L, b, h, c, P, x){
+        let stress = 0;
+        c += L/2;
+        x += L/2;
+        let y = h;
+        let I = b*h**3/12;
+        if (x < c)
+            stress = y/I*P*(1.-c/L)*x;
+        else
+            stress = y/I*P*c*(1.-x/L)
+        return stress;
     }
 }
