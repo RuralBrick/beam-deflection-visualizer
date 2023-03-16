@@ -20,6 +20,7 @@ export class Final_Project extends Scene {
             cylinder: new defs.Capped_Cylinder(50, 15),
             lucy: new Shape_From_File('../assets/lucy.obj'),
             teapot: new Shape_From_File('../assets/teapot.obj'),
+            car: new Shape_From_File('../assets/Car.obj'),
             beam: new Subdivision_Cube(15, 15),
         };
 
@@ -145,6 +146,13 @@ export class Final_Project extends Scene {
 
         const E = 1e3;
         const I = b*h**3/12;
+
+        this.shapes.car.draw(
+            context,
+            program_state,
+            Mat4.translation(0,0,10).times(Mat4.scale(l,h,b)),
+            this.materials.test
+        );
 
         this.shapes.beam.draw(
             context,
