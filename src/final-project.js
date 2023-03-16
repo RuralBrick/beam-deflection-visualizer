@@ -150,7 +150,7 @@ export class Final_Project extends Scene {
         this.shapes.car.draw(
             context,
             program_state,
-            Mat4.translation(0,0,10).times(Mat4.scale(l,h,b)),
+            Mat4.translation(0,0,10).times(Mat4.scale(3,3,3)),
             this.materials.test
         );
 
