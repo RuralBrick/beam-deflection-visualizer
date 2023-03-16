@@ -3,6 +3,7 @@ import { Shear_Shader } from './shear-shader.js';
 import {Force} from "./force.js";
 import { Shape_From_File } from '../examples/obj-file-demo.js';
 import { Beam_Shader } from './beam-shader.js';
+import { FOS_Shader} from "./FOS-shader.js";
 import { Subdivision_Cube } from './subdivision-cube.js';
 
 const {
@@ -44,12 +45,13 @@ export class Final_Project extends Scene {
 
         this.shaders = {
             beam: new Beam_Shader(),
+            FOS: new FOS_Shader(),
         };
 
         this.max_width = 4;
         this.min_width = 2;
 
-        this.max_height = 2;
+        this.max_height = 4;
         this.min_height = 0.75;
 
         this.use_animation = true;
@@ -62,6 +64,7 @@ export class Final_Project extends Scene {
         this.max_stress = 0;
 
         this.E = 1.4e9;
+        this.Ys = 40e6;
         this.current_material = "plastic";
         this.use_exaggerated_strain = false;
         this.exaggerated_strain_string = " (realistic)";
@@ -125,10 +128,6 @@ export class Final_Project extends Scene {
 
         this.new_line();
 
-        this.live_string(box => {
-            box.textContent = "max stress: " + this.max_stress.toFixed(2)
-        });
-
         this.new_line();
 
         this.live_string(box => {
@@ -140,22 +139,25 @@ export class Final_Project extends Scene {
         this.key_triggered_button("Material: Plastic (1.4GPa)", ["7"], () => {
             this.E = 1.4e9;
             this.current_material = "plastic";
+            this.Ys = 40e6;
         });
         this.new_line();
         this.key_triggered_button("Material: Wood (13GPa)", ["8"], () => {
             this.E = 13e9;
             this.current_material = "wood";
+            this.Ys = 50e6;
         });
         this.new_line();
 
         this.key_triggered_button("Material: Steel (180GPa)", ["9"], () => {
             this.E = 180e9;
             this.current_material = "steel";
+            this.Ys = 860e6;
         });
         this.new_line();
         this.key_triggered_button("Toggle exaggerate strain", ["0"], () => {
             this.use_exaggerated_strain ^= 1;
-            if (this.use_exaggerated_strain == true){
+            if (this.use_exaggerated_strain === true){
                 this.exaggerated_strain_string = " (exaggerated)";
             }
             else{
@@ -173,14 +175,15 @@ export class Final_Project extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         const period = 5;
-        let magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
+        //let magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
+        let magnitude = 10;
         if(this.use_animation){
             this.force_location = 5 * Math.cos(2*Math.PI*this.frames/period);
             this.frames = this.frames + dt;
         }
 
 
-        const force = new Force(vec3(0, -1, 0), 10 * magnitude, vec3(this.force_location, 1, 0));
+        const force = new Force(vec3(0, -1, 0), magnitude, vec3(this.force_location, 1, 0));
         force.draw(context, program_state);
 
         const b = this.width;
@@ -217,12 +220,13 @@ export class Final_Project extends Scene {
             program_state,
             Mat4.scale(l/2, h/2, b/2),
             new Material(
-                this.shaders.beam,
+                this.shaders.FOS,
                 {
                     force: force,
                     length: l,
                     youngs_modulus: E,
                     moment_of_inertia: I,
+                    yield_strength: this.Ys,
                     neg_color: color(0, 0, 1, 1),
                     zero_color: color(0, 1, 0, 1),
                     pos_color: color(1, 0, 0, 1),
@@ -232,19 +236,5 @@ export class Final_Project extends Scene {
             )
         );
 
-        this.max_stress = this.find_max_stress(l, b, h, this.force_location, magnitude, this.force_location);
-    }
-
-    find_max_stress(L, b, h, c, P, x){
-        let stress = 0;
-        c += L/2;
-        x += L/2;
-        let y = h;
-        let I = b*h**3/12;
-        if (x < c)
-            stress = y/I*P*(1.-c/L)*x;
-        else
-            stress = y/I*P*c*(1.-x/L)
-        return stress;
     }
 }
