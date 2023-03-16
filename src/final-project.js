@@ -55,6 +55,7 @@ export class Final_Project extends Scene {
         this.min_height = 0.75;
 
         this.use_animation = true;
+        this.current_shader = "texture";
         this.force_location = 0;
         this.frames = 0;
         this.width = 2;
@@ -127,6 +128,25 @@ export class Final_Project extends Scene {
         });
 
         this.new_line();
+        this.new_line();
+
+        this.key_triggered_button("Use texture shader", ["5"], () => {
+            this.current_shader = "texture";
+        });
+
+        this.new_line();
+
+        this.key_triggered_button("Use stress shader", ["6"], () => {
+            this.current_shader = "stress";
+        });
+
+        this.new_line();
+
+        this.key_triggered_button("Use FOS shader", ["7"], () => {
+            this.current_shader = "FOS";
+        });
+
+        this.new_line();
 
         this.new_line();
 
@@ -136,26 +156,26 @@ export class Final_Project extends Scene {
 
         this.new_line();
 
-        this.key_triggered_button("Material: Plastic (1.4GPa)", ["7"], () => {
+        this.key_triggered_button("Material: Plastic (1.4GPa)", ["8"], () => {
             this.E = 1.4e9;
             this.current_material = "plastic";
             this.Ys = 40e6;
         });
         this.new_line();
-        this.key_triggered_button("Material: Wood (13GPa)", ["8"], () => {
+        this.key_triggered_button("Material: Wood (13GPa)", ["9"], () => {
             this.E = 13e9;
             this.current_material = "wood";
             this.Ys = 50e6;
         });
         this.new_line();
 
-        this.key_triggered_button("Material: Steel (180GPa)", ["9"], () => {
+        this.key_triggered_button("Material: Steel (180GPa)", ["0"], () => {
             this.E = 180e9;
             this.current_material = "steel";
             this.Ys = 860e6;
         });
         this.new_line();
-        this.key_triggered_button("Toggle exaggerate strain", ["0"], () => {
+        this.key_triggered_button("Toggle exaggerate strain", ["e"], () => {
             this.use_exaggerated_strain ^= 1;
             if (this.use_exaggerated_strain === true){
                 this.exaggerated_strain_string = " (exaggerated)";
@@ -215,25 +235,51 @@ export class Final_Project extends Scene {
             this.materials.test
         );
 
+        let beam_material = this.materials.test;
+        switch(this.current_shader) {
+            case "texture":
+                beam_material = this.materials.test;
+                break;
+            case "stress":
+                beam_material = new Material(
+                    this.shaders.beam,
+                    {
+                        force: force,
+                        length: l,
+                        youngs_modulus: E,
+                        moment_of_inertia: I,
+                        neg_color: color(0, 0, 1, 1),
+                        zero_color: color(0, 1, 0, 1),
+                        pos_color: color(1, 0, 0, 1),
+                        min_stress: -10,
+                        max_stress: 10,
+                    }
+                );
+                break;
+            case "FOS":
+                beam_material = new Material(
+                    this.shaders.FOS,
+                    {
+                        force: force,
+                        length: l,
+                        youngs_modulus: E,
+                        moment_of_inertia: I,
+                        yield_strength: this.Ys,
+                        neg_color: color(0, 0, 1, 1),
+                        zero_color: color(0, 1, 0, 1),
+                        pos_color: color(1, 0, 0, 1),
+                        min_stress: -10,
+                        max_stress: 10,
+                    }
+                );
+                break;
+        }
+
         this.shapes.beam.draw(
             context,
             program_state,
             Mat4.translation(0, 1-h/2, 0).times(Mat4.scale(l/2, h/2, b/2)),
-            new Material(
-                this.shaders.FOS,
-                {
-                    force: force,
-                    length: l,
-                    youngs_modulus: E,
-                    moment_of_inertia: I,
-                    yield_strength: this.Ys,
-                    neg_color: color(0, 0, 1, 1),
-                    zero_color: color(0, 1, 0, 1),
-                    pos_color: color(1, 0, 0, 1),
-                    min_stress: -10,
-                    max_stress: 10,
-                }
-            )
+            beam_material,
         );
 
     }
