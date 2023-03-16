@@ -113,7 +113,7 @@ export class FOS_Shader extends Shader {
                     FOS = Ys / stress;
                 }
                 
-                if (abs(FOS) > 10000000.){
+                if (FOS > 10000000. || FOS < 0.){
                     gl_FragColor = vec4( 0., 1., 0., 1. );
                 }
                 else {
