@@ -57,6 +57,11 @@ export class Final_Project extends Scene {
         this.length = 10;
 
         this.max_stress = 0;
+
+        this.E = 1.4e9;
+        this.current_material = "plastic";
+        this.use_exaggerated_strain = false;
+        this.exaggerated_strain_string = " (realistic)";
     }
 
     setup(context, program_state) {
@@ -82,7 +87,7 @@ export class Final_Project extends Scene {
 
         this.key_triggered_button("Decrease width", ["j"], () => {
             if(this.width > this.min_width){
-                this.width += 0.25;
+                this.width -= 0.25;
             };
         });
 
@@ -109,16 +114,52 @@ export class Final_Project extends Scene {
             box.textContent = "Height: " + this.height.toFixed(2)
         });
 
-        this.key_triggered_button("Increase Width", ["i"], () => {
+        this.key_triggered_button("Increase height", ["i"], () => {
             if(this.height < this.max_height){
                 this.height += 0.25;
             };
         });
 
         this.new_line();
+
         this.live_string(box => {
             box.textContent = "max stress: " + this.max_stress.toFixed(2)
         });
+
+        this.new_line();
+
+        this.live_string(box => {
+            box.textContent = "Current material: " + this.current_material + this.exaggerated_strain_string;
+        });
+
+        this.new_line();
+
+        this.key_triggered_button("Material: Plastic (1.4GPa)", ["7"], () => {
+            this.E = 1.4e9;
+            this.current_material = "plastic";
+        });
+        this.new_line();
+        this.key_triggered_button("Material: Wood (13GPa)", ["8"], () => {
+            this.E = 13e9;
+            this.current_material = "wood";
+        });
+        this.new_line();
+
+        this.key_triggered_button("Material: Steel (180GPa)", ["9"], () => {
+            this.E = 180e9;
+            this.current_material = "steel";
+        });
+        this.new_line();
+        this.key_triggered_button("Toggle exaggerate strain", ["0"], () => {
+            this.use_exaggerated_strain ^= 1;
+            if (this.use_exaggerated_strain == true){
+                this.exaggerated_strain_string = " (exaggerated)";
+            }
+            else{
+                this.exaggerated_strain_string = " (realistic)"
+            }
+        });
+
 
     }
 
@@ -143,9 +184,11 @@ export class Final_Project extends Scene {
         const h = this.height;
         const l = this.length;
 
-        const E = 1e3;
         const I = b*h**3/12;
-
+        let E = this.E;
+        if(this.use_exaggerated_strain){
+            E *= 0.75e-7;
+        }
         this.shapes.beam.draw(
             context,
             program_state,
