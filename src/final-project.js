@@ -204,7 +204,6 @@ export class Final_Project extends Scene {
 
 
         const force = new Force(vec3(0, -1, 0), magnitude, vec3(this.force_location, 1, 0));
-        force.draw(context, program_state);
 
         const b = this.width;
         const h = this.height;
