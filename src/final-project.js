@@ -20,6 +20,7 @@ export class Final_Project extends Scene {
             cylinder: new defs.Capped_Cylinder(50, 15),
             lucy: new Shape_From_File('../assets/lucy.obj'),
             teapot: new Shape_From_File('../assets/teapot.obj'),
+            car: new Shape_From_File('../assets/Car.obj'),
             beam: new Subdivision_Cube(15, 15),
         };
 
@@ -189,6 +190,14 @@ export class Final_Project extends Scene {
         if(this.use_exaggerated_strain){
             E *= 0.75e-7;
         }
+
+        this.shapes.car.draw(
+            context,
+            program_state,
+            Mat4.translation(0,0,10).times(Mat4.scale(3,3,3)),
+            this.materials.test
+        );
+
         this.shapes.beam.draw(
             context,
             program_state,
