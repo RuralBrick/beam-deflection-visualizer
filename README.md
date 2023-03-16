@@ -17,6 +17,15 @@ listening on port 8000.
 
 This project should also be compatible with any JavaScript IDE.
 
+## Interaction
+
+After the project loads, you should see the bridge in the center of the screen.
+Under the bridge, there should be two labelled boxes that contain buttons you
+can click -- `Final_Project`, which manipulates the bridge and car, and
+`Movement_Controls`, which manipulates the camera. You can either click the
+buttons directly to use them or press their corresponding keys in the
+parentheses.
+
 ## High-Level Design
 
 All non-`tiny-graphics` code is in `src/`, and our original models are
