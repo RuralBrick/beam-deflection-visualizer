@@ -21,6 +21,8 @@ export class Final_Project extends Scene {
             lucy: new Shape_From_File('../assets/lucy.obj'),
             teapot: new Shape_From_File('../assets/teapot.obj'),
             car: new Shape_From_File('../assets/Car.obj'),
+            bridge: new Shape_From_File('../assets/Bridge.obj'),
+            scene: new Shape_From_File('../assets/Scene.obj'),
             beam: new Subdivision_Cube(15, 15),
         };
 
@@ -194,7 +196,19 @@ export class Final_Project extends Scene {
         this.shapes.car.draw(
             context,
             program_state,
-            Mat4.translation(0,0,10).times(Mat4.scale(3,3,3)),
+            Mat4.translation(this.force_location,4/3,0).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+            this.materials.test
+        );
+        this.shapes.scene.draw(
+            context,
+            program_state,
+            Mat4.translation(-l/2 - 4,1,0).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
+            this.materials.test
+        );
+        this.shapes.scene.draw(
+            context,
+            program_state,
+            Mat4.translation(l/2 + 4,1,0).times(Mat4.rotation(-Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
             this.materials.test
         );
 
