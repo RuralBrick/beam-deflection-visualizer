@@ -218,7 +218,7 @@ export class Final_Project extends Scene {
         this.shapes.beam.draw(
             context,
             program_state,
-            Mat4.scale(l/2, h/2, b/2),
+            Mat4.translation(0, 1-h/2, 0).times(Mat4.scale(l/2, h/2, b/2)),
             new Material(
                 this.shaders.FOS,
                 {
