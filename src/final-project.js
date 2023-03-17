@@ -24,7 +24,7 @@ export class Final_Project extends Scene {
             car: new Shape_From_File('../assets/Car.obj'),
             bridge: new Shape_From_File('../assets/Bridge.obj'),
             scene: new Shape_From_File('../assets/Scene.obj'),
-            beam: new Subdivision_Cube(1, 1),
+            beam: new Subdivision_Cube(15, 15),
         };
 
         this.materials = {
