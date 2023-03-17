@@ -177,7 +177,7 @@ export class Final_Project extends Scene {
         this.new_line();
         this.key_triggered_button("Toggle exaggerate strain", ["e"], () => {
             this.use_exaggerated_strain ^= 1;
-            if (this.use_exaggerated_strain === true){
+            if (this.use_exaggerated_strain == true){
                 this.exaggerated_strain_string = " (exaggerated)";
             }
             else{
