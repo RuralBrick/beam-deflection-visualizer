@@ -72,6 +72,8 @@ export class Final_Project extends Scene {
         this.current_material = "plastic";
         this.use_exaggerated_strain = false;
         this.exaggerated_strain_string = " (realistic)";
+
+        this.car_speed = 5;
     }
 
     setup(context, program_state) {
@@ -180,7 +182,7 @@ export class Final_Project extends Scene {
         this.new_line();
         this.key_triggered_button("Toggle exaggerate strain", ["e"], () => {
             this.use_exaggerated_strain ^= 1;
-            if (this.use_exaggerated_strain === true){
+            if (this.use_exaggerated_strain == true){
                 this.exaggerated_strain_string = " (exaggerated)";
             }
             else{
@@ -191,20 +193,37 @@ export class Final_Project extends Scene {
 
     }
 
+    /**
+     * Random range
+     * @param {int} a lower bound
+     * @param {int} b upper bound
+     * @returns an int in [a, b)
+     */
+    random_range(a, b) {
+        return a + Math.floor(Math.random()*(b-a));
+    }
+
+    update_car_location(context, program_state) {
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        const inside_tunnel_coord = 10;
+
+        this.force_location += this.car_speed * dt;
+
+        if (this.force_location > inside_tunnel_coord) {
+            this.force_location = -inside_tunnel_coord;
+            this.car_speed = this.random_range(3, 10);
+        }
+    }
+
     display(context, program_state) {
         this.setup(context, program_state);
 
         // TODO: Maybe draw axes
 
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        const period = 5;
-        //let magnitude = 0.5 + 0.5*Math.cos(2*Math.PI*t/period);
         let magnitude = 10;
-        if(this.use_animation){
-            this.force_location = 5 * Math.cos(2*Math.PI*this.frames/period);
-            this.frames = this.frames + dt;
+        if (this.use_animation) {
+            this.update_car_location(context, program_state);
         }
-
 
         const force = new Force(vec3(0, -1, 0), magnitude, vec3(this.force_location, 1, 0));
 
@@ -236,6 +255,10 @@ export class Final_Project extends Scene {
             Mat4.translation(l/2 + 4,1,0).times(Mat4.rotation(-Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
             this.materials.b
         );
+
+        if (Math.abs(this.force_location) > l/2) {
+            force.magnitude = 0;
+        }
 
         let beam_material = this.materials.test;
         switch(this.current_shader) {
