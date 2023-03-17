@@ -7,7 +7,7 @@ import { FOS_Shader} from "./FOS-shader.js";
 import { Subdivision_Cube } from './subdivision-cube.js';
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Texture, Matrix, Mat4, Light, Shape, Material, Scene,
 } = tiny;
 
 export class Final_Project extends Scene {
@@ -41,6 +41,9 @@ export class Final_Project extends Scene {
                     max_force: 10
                 }
             ),
+            b: new Material(
+                new defs.Fake_Bump_Map(1),
+                {ambient: .5, texture: new Texture("assets/earth.gif")})
         };
 
         this.shaders = {
@@ -219,19 +222,19 @@ export class Final_Project extends Scene {
             context,
             program_state,
             Mat4.translation(this.force_location,4/3,0).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
-            this.materials.test
+            this.materials.b
         );
         this.shapes.scene.draw(
             context,
             program_state,
             Mat4.translation(-l/2 - 4,1,0).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
-            this.materials.test
+            this.materials.b
         );
         this.shapes.scene.draw(
             context,
             program_state,
             Mat4.translation(l/2 + 4,1,0).times(Mat4.rotation(-Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
-            this.materials.test
+            this.materials.b
         );
 
         let beam_material = this.materials.test;
