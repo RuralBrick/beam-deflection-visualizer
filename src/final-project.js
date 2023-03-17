@@ -24,7 +24,7 @@ export class Final_Project extends Scene {
             car: new Shape_From_File('../assets/Car.obj'),
             bridge: new Shape_From_File('../assets/Bridge.obj'),
             scene: new Shape_From_File('../assets/Scene.obj'),
-            beam: new Subdivision_Cube(15, 15),
+            beam: new Subdivision_Cube(1, 1),
         };
 
         this.materials = {
@@ -41,9 +41,21 @@ export class Final_Project extends Scene {
                     max_force: 10
                 }
             ),
-            b: new Material(
+            car: new Material(
                 new defs.Fake_Bump_Map(1),
-                {ambient: .5, texture: new Texture("assets/earth.gif")})
+                {ambient: .5, texture: new Texture("assets/black_car.png")}),
+            mountain: new Material(
+                new defs.Fake_Bump_Map(1),
+                {ambient: .8, texture: new Texture("assets/mountain.png")}),
+            wood_bridge: new Material(
+                new defs.Fake_Bump_Map(1),
+                {ambient: .5, texture: new Texture("assets/wood.png")}),
+            plastic_bridge: new Material(
+                new defs.Fake_Bump_Map(1),
+                {ambient: .5, texture: new Texture("assets/lego.png")}),
+            steel_bridge: new Material(
+                new defs.Fake_Bump_Map(1),
+                {ambient: .5, texture: new Texture("assets/steel.jpeg")})
         };
 
         this.shaders = {
@@ -241,19 +253,19 @@ export class Final_Project extends Scene {
             context,
             program_state,
             Mat4.translation(this.force_location,4/3,0).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
-            this.materials.b
+            this.materials.car
         );
         this.shapes.scene.draw(
             context,
             program_state,
             Mat4.translation(-l/2 - 4,1,0).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
-            this.materials.b
+            this.materials.mountain
         );
         this.shapes.scene.draw(
             context,
             program_state,
             Mat4.translation(l/2 + 4,1,0).times(Mat4.rotation(-Math.PI / 2, 0, 1, 0)).times(Mat4.scale(3,3,3)),
-            this.materials.b
+            this.materials.mountain
         );
 
         if (Math.abs(this.force_location) > l/2) {
@@ -263,7 +275,17 @@ export class Final_Project extends Scene {
         let beam_material = this.materials.test;
         switch(this.current_shader) {
             case "texture":
-                beam_material = this.materials.test;
+                switch(this.current_material) {
+                    case "plastic":
+                        beam_material = this.materials.plastic_bridge;
+                        break;
+                    case "wood":
+                        beam_material = this.materials.wood_bridge;
+                        break;
+                    case "steel":
+                        beam_material = this.materials.steel_bridge;
+                        break;
+                }  
                 break;
             case "stress":
                 beam_material = new Material(
